@@ -1,8 +1,8 @@
 import { fetcher } from '@/lib/coingecko.actions';
 import Link from 'next/link';
 import Image from 'next/image';
-import { cn, formatCurrency, formatPercentage } from '@/lib/utils';
-import { TrendingDown, TrendingUp } from 'lucide-react';
+import { cn, formatCurrency } from '@/lib/utils';
+import { TrendingDown, TrendingUp, Zap } from 'lucide-react';
 import DataTable from '@/components/DataTable';
 import { TrendingCoinsFallback } from './fallback';
 
@@ -39,15 +39,14 @@ const TrendingCoins = async () => {
         const isTrendingUp = item.data.price_change_percentage_24h.usd > 0;
 
         return (
-          <div className={cn('price-change', isTrendingUp ? 'text-green-500' : 'text-red-500')}>
-            <p className="flex items-center">
-              {formatPercentage(item.data.price_change_percentage_24h.usd)}
-              {isTrendingUp ? (
-                <TrendingUp width={16} height={16} />
-              ) : (
-                <TrendingDown width={16} height={16} />
-              )}
-            </p>
+          <div className={cn(
+            "flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-bold w-fit",
+            isTrendingUp 
+              ? "bg-green-500/10 text-green-500 border border-green-500/20" 
+              : "bg-red-500/10 text-red-500 border border-red-500/20"
+          )}>
+            {isTrendingUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+            {Math.abs(item.data.price_change_percentage_24h.usd).toFixed(2)}%
           </div>
         );
       },
@@ -60,8 +59,12 @@ const TrendingCoins = async () => {
   ];
 
   return (
-    <div id="trending-coins">
-      <h4>Trending Coins</h4>
+    <div id="trending-coins" className="relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 blur-3xl rounded-full -mr-16 -mt-16" />
+      <h4 className="flex items-center gap-2 mb-4">
+        <Zap size={18} className="text-yellow-400 fill-yellow-400/20" /> 
+        Trending Markets
+      </h4>
 
       <DataTable
         data={trendingCoins.coins.slice(0, 6) || []}
