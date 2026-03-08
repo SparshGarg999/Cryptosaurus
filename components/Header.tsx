@@ -101,10 +101,20 @@ const Header = () => {
     <>
       <header>
         <div className="main-container inner">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+          <Link 
+            href="/" 
+            className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+            onClick={(e) => {
+              // Force page reload as requested
+              if (window.location.pathname === '/') {
+                e.preventDefault();
+                window.location.reload();
+              }
+            }}
+          >
             <div className="relative size-10 flex items-center justify-center bg-gradient-to-br from-purple-500 to-green-500 rounded-xl overflow-hidden shadow-lg shadow-purple-500/20">
               <svg viewBox="0 0 24 24" className="size-7 fill-white drop-shadow-md" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22 10V6L19 4L16 6L14 3L11 6L8 3L5 6L2 4V10L5 12V21H19V12L22 10ZM17 19H7V11.5L12 14L17 11.5V19Z" />
+                <path d="M12,2C10.89,2 10,2.89 10,4C10,5.11 10.89,6 12,6C13.11,6 14,5.11 14,4C14,2.89 13.11,2 12,2M16.5,5C15.4,5 14.5,5.9 14.5,7C14.5,8.1 15.4,9 16.5,9C17.6,9 18.5,8.1 18.5,7C18.5,5.9 17.6,5 16.5,5M7.5,5C6.4,5 5.5,5.9 5.5,7C5.5,8.1 6.4,9 7.5,9C8.6,9 9.5,8.1 9.5,7C9.5,5.9 8.6,5 7.5,5M12,8C9.79,8 8,9.79 8,12C8,14.21 9.79,16 12,16C14.21,16 16,14.21 16,12C16,9.79 14.21,8 12,8M12,18C8.69,18 6,20.69 6,24H18C18,20.69 15.31,18 12,18Z" />
               </svg>
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none" />
             </div>
