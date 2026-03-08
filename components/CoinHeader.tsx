@@ -2,6 +2,7 @@ import { cn, formatCurrency, formatPercentage } from '@/lib/utils';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { TrendingDown, TrendingUp } from 'lucide-react';
+import { useCurrency } from '@/context/CurrencyContext';
 
 const CoinHeader = ({
   livePriceChangePercentage24h,
@@ -10,8 +11,11 @@ const CoinHeader = ({
   image,
   livePrice,
   priceChange24h,
-  currency = 'usd',
+  coinData,
 }: LiveCoinHeaderProps) => {
+  const { currency } = useCurrency();
+  const exchangeRate = (coinData?.market_data.current_price[currency] || 1) / (coinData?.market_data.current_price['usd'] || 1);
+
   const isTrendingUp = livePriceChangePercentage24h > 0;
   const isThirtyDayUp = priceChangePercentage30d > 0;
   const isPriceChangeUp = priceChange24h > 0;
@@ -40,6 +44,8 @@ const CoinHeader = ({
     },
   ];
 
+  const scaledLivePrice = livePrice * exchangeRate;
+
   return (
     <div id="coin-header">
       <div className="info">
@@ -47,8 +53,8 @@ const CoinHeader = ({
 
         <div className="price-row">
           <p className="text-sm text-purple-100 font-bold mb-0 hidden sm:block">{name}</p>
-          <h1 className={cn(isTrendingUp ? 'text-green-500' : 'text-red-500')}>{formatCurrency(livePrice, 2, currency)}</h1>
-          <p className="text-xs text-purple-100 font-bold mt-1 max-sm:hidden">{formatCurrency(livePrice, 2, currency)}</p>
+          <h1 className={cn(isTrendingUp ? 'text-green-500' : 'text-red-500')}>{formatCurrency(scaledLivePrice, 2, currency)}</h1>
+          <p className="text-xs text-purple-100 font-bold mt-1 max-sm:hidden">{formatCurrency(scaledLivePrice, 2, currency)}</p>
         </div>
       </div>
 

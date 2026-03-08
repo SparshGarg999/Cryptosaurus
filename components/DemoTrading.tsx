@@ -3,13 +3,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { LogIn, CheckCircle } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface DemoTradingProps {
   coinId: string;
   coinSymbol: string;
   livePrice: number;
-  currency?: string;
-  exchangeRate?: number;
+  currentPriceList?: { [key: string]: number; usd: number };
 }
 
 interface Portfolio {
@@ -32,7 +32,10 @@ const savePortfolio = (p: Portfolio) => {
   localStorage.setItem('coinpulse_demo_portfolio', JSON.stringify(p));
 };
 
-const DemoTrading = ({ coinId, coinSymbol, livePrice, currency = 'usd', exchangeRate = 1 }: DemoTradingProps) => {
+const DemoTrading = ({ coinId, coinSymbol, livePrice, currentPriceList }: DemoTradingProps) => {
+  const { currency } = useCurrency();
+  const exchangeRate = (currentPriceList?.[currency] || 1) / (currentPriceList?.['usd'] || 1);
+  
   const [portfolio, setPortfolio] = useState<Portfolio>(getPortfolio);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [tab, setTab] = useState<'buy' | 'sell'>('buy');

@@ -17,8 +17,7 @@ interface CandlestickChartProps {
   livePrice?: number;
   liveInterval?: 'second' | 'minute';
   setLiveInterval?: (interval: 'second' | 'minute') => void;
-  currency?: string;
-  exchangeRate?: number;
+  currentPriceList?: { [key: string]: number; usd: number };
 }
 
 interface ConverterProps {
@@ -239,11 +238,11 @@ interface LiveDataProps {
 interface LiveCoinHeaderProps {
   name: string;
   image: string;
-  livePrice?: number;
+  livePrice: number;
   livePriceChangePercentage24h: number;
   priceChangePercentage30d: number;
   priceChange24h: number;
-  currency?: string;
+  coinData: CoinDetailsData;
 }
 
 interface Category {

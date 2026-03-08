@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { User, ChevronDown, Wallet } from 'lucide-react';
 import LoginModal from '@/components/LoginModal';
+import { formatCurrency } from '@/lib/utils';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface AuthUser {
   name: string;
@@ -22,6 +24,7 @@ const INITIAL_CAPITAL = 100000;
 
 const Header = () => {
   const pathname = usePathname();
+  const { currency } = useCurrency();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -147,7 +150,7 @@ const Header = () => {
                         <span className="text-xs text-purple-100/50">USDT Balance</span>
                       </div>
                       <p className="text-sm font-bold text-white">
-                        ${portfolioUsdt.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        {formatCurrency(portfolioUsdt, 2, currency)}
                       </p>
                     </div>
                     <button
@@ -178,7 +181,7 @@ const Header = () => {
             <div className="flex items-center gap-4">
               <span className="text-purple-100/50">Available USDT</span>
               <span className="text-white font-bold">
-                ${portfolioUsdt.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {formatCurrency(portfolioUsdt, 2, currency)}
               </span>
             </div>
             <div className="flex items-center gap-4">

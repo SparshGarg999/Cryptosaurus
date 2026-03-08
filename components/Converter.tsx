@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
+import { useCurrency } from '@/context/CurrencyContext';
 
 import {
   Select,
@@ -15,7 +16,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const Converter = ({ symbol, icon, priceList, currency, onCurrencyChange }: ConverterProps) => {
+const Converter = ({ symbol, icon, priceList }: ConverterProps) => {
+  const { currency, setCurrency } = useCurrency();
   const [amount, setAmount] = useState('10');
 
   const convertedPrice = (parseFloat(amount) || 0) * (priceList[currency] || 0);
@@ -48,7 +50,7 @@ const Converter = ({ symbol, icon, priceList, currency, onCurrencyChange }: Conv
         <div className="output-wrapper">
           <p>{formatCurrency(convertedPrice, 2, currency, false)}</p>
 
-          <Select value={currency} onValueChange={onCurrencyChange}>
+          <Select value={currency} onValueChange={setCurrency}>
             <SelectTrigger className="select-trigger" value={currency}>
               <SelectValue placeholder="Select" className="select-value">
                 {currency.toUpperCase()}

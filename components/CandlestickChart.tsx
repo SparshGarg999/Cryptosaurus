@@ -10,8 +10,9 @@ import {
 } from '@/constants';
 import { CandlestickSeries, createChart, IChartApi, ISeriesApi, LogicalRange } from 'lightweight-charts';
 import { fetcher } from '@/lib/coingecko.actions';
-import { convertOHLCData } from '@/lib/utils';
+import { convertOHLCData, formatCurrency } from '@/lib/utils';
 import { Maximize, Minimize } from 'lucide-react';
+import { useCurrency } from '@/context/CurrencyContext';
 
 const CandlestickChart = ({
   children,
@@ -25,9 +26,11 @@ const CandlestickChart = ({
   mode = 'historical',
   liveInterval,
   setLiveInterval,
-  currency = 'usd',
-  exchangeRate = 1,
+  currentPriceList,
 }: CandlestickChartProps) => {
+  const { currency } = useCurrency();
+  const exchangeRate = (currentPriceList?.[currency] || 1) / (currentPriceList?.['usd'] || 1);
+  
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
@@ -71,10 +74,6 @@ const CandlestickChart = ({
         vs_currency: 'usd',
         days,
       };
-
-      if (interval) {
-        params.interval = interval;
-      }
 
       const newData = await fetcher<OHLCData[]>(`/coins/${coinId}/ohlc`, params);
 
