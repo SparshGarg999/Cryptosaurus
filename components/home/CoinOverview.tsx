@@ -51,36 +51,36 @@ const CoinOverview = async () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-4 border-t border-dark-400/50">
-              <div className="flex flex-col">
-                <span className="text-[10px] text-purple-100/30 uppercase font-bold tracking-widest flex items-center gap-1.5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-4 gap-x-8 mt-6 pt-4 border-t border-dark-400/50">
+              <div className="flex flex-col min-w-0">
+                <span className="text-[10px] text-purple-100/30 uppercase font-bold tracking-widest flex items-center gap-1.5 whitespace-nowrap">
                   <Activity size={10} /> 24h High
                 </span>
-                <span className="text-sm font-bold text-white mt-0.5">
+                <span className="text-sm font-bold text-white mt-0.5 truncate">
                   {formatCurrency(coin.market_data.high_24h.usd)}
                 </span>
               </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] text-purple-100/30 uppercase font-bold tracking-widest flex items-center gap-1.5">
+              <div className="flex flex-col min-w-0">
+                <span className="text-[10px] text-purple-100/30 uppercase font-bold tracking-widest flex items-center gap-1.5 whitespace-nowrap">
                   <Activity size={10} /> 24h Low
                 </span>
-                <span className="text-sm font-bold text-white mt-0.5">
+                <span className="text-sm font-bold text-white mt-0.5 truncate">
                   {formatCurrency(coin.market_data.low_24h.usd)}
                 </span>
               </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] text-purple-100/30 uppercase font-bold tracking-widest flex items-center gap-1.5">
+              <div className="flex flex-col min-w-0">
+                <span className="text-[10px] text-purple-100/30 uppercase font-bold tracking-widest flex items-center gap-1.5 whitespace-nowrap">
                   <BarChart2 size={10} /> 24h Volume
                 </span>
-                <span className="text-sm font-bold text-white mt-0.5">
+                <span className="text-sm font-bold text-white mt-0.5 truncate">
                   {formatCurrency(coin.market_data.total_volume.usd)}
                 </span>
               </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] text-purple-100/30 uppercase font-bold tracking-widest flex items-center gap-1.5">
+              <div className="flex flex-col min-w-0">
+                <span className="text-[10px] text-purple-100/30 uppercase font-bold tracking-widest flex items-center gap-1.5 whitespace-nowrap">
                   <Image src="/icon.svg" alt="logo" width={10} height={10} className="opacity-50 grayscale" /> Hunt Index
                 </span>
-                <span className="text-sm font-bold text-purple-400 mt-0.5">
+                <span className="text-sm font-bold text-purple-400 mt-0.5 truncate">
                   {((coin.market_data.price_change_percentage_24h + 10) * 4.2).toFixed(1)} <span className="text-[10px] opacity-30">PT</span>
                 </span>
               </div>
