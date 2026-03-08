@@ -32,6 +32,7 @@ const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [portfolioUsdt, setPortfolioUsdt] = useState(INITIAL_CAPITAL);
   const [holdingsCount, setHoldingsCount] = useState(0);
+  const [holdingsInvested, setHoldingsInvested] = useState(0);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -57,7 +58,9 @@ const Header = () => {
           const p: Portfolio = JSON.parse(saved);
           setPortfolioUsdt(p.usdt);
           const activeHoldings = Object.values(p.holdings || {}).filter((h: any) => h.qty > 0).length;
+          const invested = Object.values(p.holdings || {}).reduce((acc: number, h: any) => acc + (h.qty * h.avgCost), 0);
           setHoldingsCount(activeHoldings);
+          setHoldingsInvested(invested);
         }
       } catch {}
     };
@@ -201,17 +204,18 @@ const Header = () => {
       {/* Global Portfolio Bar — visible when logged in */}
       {isLoggedIn && (
         <div className="bg-dark-500/80 border-b border-dark-400 px-4 py-1.5">
-          <div className="main-container flex items-center justify-between text-xs">
-            <div className="flex items-center gap-4">
+          <div className="main-container flex items-center justify-end gap-6 text-xs">
+            <div className="flex items-center gap-3">
               <span className="text-purple-100/50">Available USDT</span>
               <span className="text-white font-bold">
                 {formatCurrency(portfolioUsdt, 2, currency)}
               </span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="w-px h-3 bg-dark-400"></div>
+            <div className="flex items-center gap-3">
               <span className="text-purple-100/50">Active Holdings</span>
               <span className="text-white font-bold">
-                {holdingsCount} coin{holdingsCount !== 1 ? 's' : ''}
+                {holdingsCount} coin{holdingsCount !== 1 ? 's' : ''} ({formatCurrency(holdingsInvested, 2, currency)})
               </span>
             </div>
           </div>
