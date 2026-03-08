@@ -35,7 +35,7 @@ const Header = () => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const authData = localStorage.getItem('coinpulse_auth_user');
+      const authData = localStorage.getItem('cryptosaurus_auth_user') || localStorage.getItem('coinpulse_auth_user');
       if (authData) {
         try {
           setUser(JSON.parse(authData));
@@ -52,7 +52,7 @@ const Header = () => {
 
     const loadPortfolio = () => {
       try {
-        const saved = localStorage.getItem('coinpulse_demo_portfolio');
+        const saved = localStorage.getItem('cryptosaurus_portfolio') || localStorage.getItem('coinpulse_demo_portfolio');
         if (saved) {
           const p: Portfolio = JSON.parse(saved);
           setPortfolioUsdt(p.usdt);
@@ -78,8 +78,8 @@ const Header = () => {
 
   const handleLogin = (method: string, name: string) => {
     const userData: AuthUser = { name, method };
-    localStorage.setItem('coinpulse_auth', 'true');
-    localStorage.setItem('coinpulse_auth_user', JSON.stringify(userData));
+    localStorage.setItem('cryptosaurus_auth', 'true');
+    localStorage.setItem('cryptosaurus_auth_user', JSON.stringify(userData));
     setUser(userData);
     setIsLoggedIn(true);
     setShowModal(false);
@@ -87,8 +87,8 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('coinpulse_auth');
-    localStorage.removeItem('coinpulse_auth_user');
+    localStorage.removeItem('cryptosaurus_auth');
+    localStorage.removeItem('cryptosaurus_auth_user');
     setUser(null);
     setIsLoggedIn(false);
     setShowDropdown(false);
@@ -102,7 +102,7 @@ const Header = () => {
       <header>
         <div className="main-container inner">
           <Link href="/">
-            <Image src="/logo.svg" alt="CoinPulse logo" width={132} height={40} />
+            <Image src="/logo.png" alt="Cryptosaurus logo" width={132} height={40} />
           </Link>
 
           <nav>

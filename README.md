@@ -1,6 +1,6 @@
-# CoinPulse: Professional Cryptocurrency Exchange Dashboard
+# Cryptosaurus: Hunt the Best Crypto Trades 🦖📈
 
-CoinPulse is a high-performance cryptocurrency analytics and trading dashboard built for precision and speed. It features real-time market data, interactive financial charts, and a comprehensive portfolio management system with multi-currency support.
+Cryptosaurus is a high-performance cryptocurrency analytics and trading dashboard built for precision and speed. It features real-time market data, interactive financial charts, and a comprehensive portfolio management system with multi-currency support.
 
 ## 1. Tech Stack Used
 
@@ -27,7 +27,7 @@ CoinPulse is a high-performance cryptocurrency analytics and trading dashboard b
 - **Iconography:** Installed `lucide-react` for a consistent set of vector icons.
 - **Git Workflow:** 
   - Setup SSH access to GitHub account.
-  - Initialized repository and migrated to user-owned [noU](https://github.com/SparshGarg999/noU) repository.
+  - Initialized repository and migrated to user-owned [cryptosaurus](https://github.com/SparshGarg999/noU) repository.
   - Established `upstream` tracking for the base template.
 - **UI System:** 
   - Initialized Shadcn-ui for modular component architecture.

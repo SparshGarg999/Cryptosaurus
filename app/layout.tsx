@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'CoinPulse',
-  description: 'Crypto Screener App with a built-in High-Frequency Terminal & Dashboard',
+  title: 'Cryptosaurus | Hunt the Best Crypto Trades',
+  description: 'Cryptosaurus is a high-performance cryptocurrency analytics and trading dashboard built for precision and speed. Hunt the best crypto trades with real-time market data.',
 };
 
 export default function RootLayout({

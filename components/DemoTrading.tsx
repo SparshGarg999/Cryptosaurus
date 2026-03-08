@@ -22,7 +22,7 @@ const INITIAL_CAPITAL = 100000;
 const getPortfolio = (): Portfolio => {
   if (typeof window === 'undefined') return { usdt: INITIAL_CAPITAL, holdings: {} };
   try {
-    const saved = localStorage.getItem('coinpulse_demo_portfolio');
+    const saved = localStorage.getItem('cryptosaurus_portfolio') || localStorage.getItem('coinpulse_demo_portfolio');
     if (saved) {
       const parsed = JSON.parse(saved);
       return {
@@ -35,7 +35,7 @@ const getPortfolio = (): Portfolio => {
 };
 
 const savePortfolio = (p: Portfolio) => {
-  localStorage.setItem('coinpulse_demo_portfolio', JSON.stringify(p));
+  localStorage.setItem('cryptosaurus_portfolio', JSON.stringify(p));
 };
 
 const DemoTrading = ({ coinId, coinSymbol, livePrice, currentPriceList }: DemoTradingProps) => {
@@ -58,8 +58,10 @@ const DemoTrading = ({ coinId, coinSymbol, livePrice, currentPriceList }: DemoTr
 
   // Auth listener
   useEffect(() => {
-    const checkAuth = () => setIsLoggedIn(localStorage.getItem('coinpulse_auth') === 'true');
-    checkAuth();
+    const checkAuth = () => {
+      const auth = localStorage.getItem('cryptosaurus_auth') || localStorage.getItem('coinpulse_auth');
+      setIsLoggedIn(auth === 'true');
+    };checkAuth();
     window.addEventListener('storage', checkAuth);
     window.addEventListener('local-storage', checkAuth);
     return () => {

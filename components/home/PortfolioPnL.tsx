@@ -20,7 +20,7 @@ const PortfolioPnL = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      const saved = localStorage.getItem('coinpulse_demo_portfolio');
+      const saved = localStorage.getItem('cryptosaurus_portfolio') || localStorage.getItem('coinpulse_demo_portfolio');
       if (!saved) {
         setIsLoading(false);
         return;
