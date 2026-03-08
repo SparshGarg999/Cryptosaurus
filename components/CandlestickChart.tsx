@@ -25,6 +25,8 @@ const CandlestickChart = ({
   mode = 'historical',
   liveInterval,
   setLiveInterval,
+  currency = 'usd',
+  exchangeRate = 1,
 }: CandlestickChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -124,7 +126,13 @@ const CandlestickChart = ({
     const series = chart.addSeries(CandlestickSeries, getCandlestickConfig());
 
     const convertedToSeconds = ohlcData.map(
-      (item) => [Math.floor(item[0] / 1000), item[1], item[2], item[3], item[4]] as OHLCData,
+      (item) => [
+        Math.floor(item[0] / 1000), 
+        item[1] * exchangeRate, 
+        item[2] * exchangeRate, 
+        item[3] * exchangeRate, 
+        item[4] * exchangeRate
+      ] as OHLCData,
     );
 
     series.setData(convertOHLCData(convertedToSeconds));
@@ -160,25 +168,40 @@ const CandlestickChart = ({
     if (!candleSeriesRef.current) return;
 
     const convertedToSeconds = ohlcData.map(
-      (item) => [Math.floor(item[0] / 1000), item[1], item[2], item[3], item[4]] as OHLCData,
+      (item) => [
+        Math.floor(item[0] / 1000), 
+        item[1] * exchangeRate, 
+        item[2] * exchangeRate, 
+        item[3] * exchangeRate, 
+        item[4] * exchangeRate
+      ] as OHLCData,
     );
 
     let merged: OHLCData[] = [...convertedToSeconds];
 
     if (livePrice && merged.length > 0) {
       const last = merged[merged.length - 1];
-      const newClose = livePrice;
-      const newHigh = Math.max(last[2], newClose);
-      const newLow = Math.min(last[3], newClose);
+      const newClose = livePrice * exchangeRate;
+      const lastHigh = last[2];
+      const lastLow = last[3];
+      const newHigh = Math.max(lastHigh, newClose);
+      const newLow = Math.min(lastLow, newClose);
       merged[merged.length - 1] = [last[0], last[1], newHigh, newLow, newClose];
     } else if (liveOhlcv) {
-      const liveTimestamp = liveOhlcv[0];
+      const liveScaled: OHLCData = [
+        liveOhlcv[0],
+        liveOhlcv[1] * exchangeRate,
+        liveOhlcv[2] * exchangeRate,
+        liveOhlcv[3] * exchangeRate,
+        liveOhlcv[4] * exchangeRate,
+      ];
+      const liveTimestamp = liveScaled[0];
       const lastHistoricalCandle = convertedToSeconds[convertedToSeconds.length - 1];
 
       if (lastHistoricalCandle && lastHistoricalCandle[0] === liveTimestamp) {
-        merged = [...convertedToSeconds.slice(0, -1), liveOhlcv];
+        merged = [...convertedToSeconds.slice(0, -1), liveScaled];
       } else if (lastHistoricalCandle && liveTimestamp > lastHistoricalCandle[0]) {
-        merged = [...convertedToSeconds, liveOhlcv];
+        merged = [...convertedToSeconds, liveScaled];
       }
     }
 

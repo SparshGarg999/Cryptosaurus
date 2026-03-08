@@ -17,12 +17,16 @@ interface CandlestickChartProps {
   livePrice?: number;
   liveInterval?: 'second' | 'minute';
   setLiveInterval?: (interval: 'second' | 'minute') => void;
+  currency?: string;
+  exchangeRate?: number;
 }
 
 interface ConverterProps {
   symbol: string;
   icon: string;
   priceList: Record<string, number>;
+  currency: string;
+  onCurrencyChange: (currency: string) => void;
 }
 
 interface Ticker {
@@ -239,6 +243,7 @@ interface LiveCoinHeaderProps {
   livePriceChangePercentage24h: number;
   priceChangePercentage30d: number;
   priceChange24h: number;
+  currency?: string;
 }
 
 interface Category {

@@ -10,6 +10,7 @@ const CoinHeader = ({
   image,
   livePrice,
   priceChange24h,
+  currency = 'usd',
 }: LiveCoinHeaderProps) => {
   const isTrendingUp = livePriceChangePercentage24h > 0;
   const isThirtyDayUp = priceChangePercentage30d > 0;
@@ -34,7 +35,7 @@ const CoinHeader = ({
       label: 'Price Change (24h)',
       value: priceChange24h,
       isUp: isPriceChangeUp,
-      formatter: formatCurrency,
+      formatter: (val: number) => formatCurrency(val, 2, currency),
       showIcon: false,
     },
   ];
@@ -46,8 +47,8 @@ const CoinHeader = ({
 
         <div className="price-row">
           <p className="text-sm text-purple-100 font-bold mb-0 hidden sm:block">{name}</p>
-          <h1 className={cn(isTrendingUp ? 'text-green-500' : 'text-red-500')}>{formatCurrency(livePrice)}</h1>
-          <p className="text-xs text-purple-100 font-bold mt-1 max-sm:hidden">{formatCurrency(livePrice)}</p>
+          <h1 className={cn(isTrendingUp ? 'text-green-500' : 'text-red-500')}>{formatCurrency(livePrice, 2, currency)}</h1>
+          <p className="text-xs text-purple-100 font-bold mt-1 max-sm:hidden">{formatCurrency(livePrice, 2, currency)}</p>
         </div>
       </div>
 

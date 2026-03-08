@@ -15,8 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const Converter = ({ symbol, icon, priceList }: ConverterProps) => {
-  const [currency, setCurrency] = useState('usd');
+const Converter = ({ symbol, icon, priceList, currency, onCurrencyChange }: ConverterProps) => {
   const [amount, setAmount] = useState('10');
 
   const convertedPrice = (parseFloat(amount) || 0) * (priceList[currency] || 0);
@@ -49,7 +48,7 @@ const Converter = ({ symbol, icon, priceList }: ConverterProps) => {
         <div className="output-wrapper">
           <p>{formatCurrency(convertedPrice, 2, currency, false)}</p>
 
-          <Select value={currency} onValueChange={setCurrency}>
+          <Select value={currency} onValueChange={onCurrencyChange}>
             <SelectTrigger className="select-trigger" value={currency}>
               <SelectValue placeholder="Select" className="select-value">
                 {currency.toUpperCase()}

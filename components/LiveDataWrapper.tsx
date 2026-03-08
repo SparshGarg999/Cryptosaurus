@@ -5,19 +5,23 @@ import CandlestickChart from '@/components/CandlestickChart';
 import { useCoinGeckoWebSocket } from '@/hooks/useCoinGeckoWebSocket';
 import DataTable from '@/components/DataTable';
 import { formatCurrency, timeAgo } from '@/lib/utils';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import CoinHeader from '@/components/CoinHeader';
 import DemoTrading from '@/components/DemoTrading';
 
 const LiveDataWrapper = ({ children, coinId, poolId, coin, coinOHLCData }: LiveDataProps) => {
   const [liveInterval, setLiveInterval] = useState<'second' | 'minute'>('second');
+  const [currency, setCurrency] = useState('usd');
+
   const { trades, ohlcv, price } = useCoinGeckoWebSocket({ coinId, poolId, coinSymbol: coin.symbol, liveInterval });
+
+  const usdToCurrencyRate = (coin.market_data.current_price[currency] || 1) / (coin.market_data.current_price['usd'] || 1);
 
   const tradeColumns: DataTableColumn<Trade>[] = [
     {
       header: 'Price',
       cellClassName: 'price-cell',
-      cell: (trade) => (trade.price ? formatCurrency(trade.price) : '-'),
+      cell: (trade) => (trade.price ? formatCurrency(trade.price * usdToCurrencyRate, 2, currency) : '-'),
     },
     {
       header: 'Amount',
@@ -27,7 +31,7 @@ const LiveDataWrapper = ({ children, coinId, poolId, coin, coinOHLCData }: LiveD
     {
       header: 'Value',
       cellClassName: 'value-cell',
-      cell: (trade) => (trade.value ? formatCurrency(trade.value) : '-'),
+      cell: (trade) => (trade.value ? formatCurrency(trade.value * usdToCurrencyRate, 2, currency) : '-'),
     },
     {
       header: 'Buy/Sell',
@@ -51,17 +55,29 @@ const LiveDataWrapper = ({ children, coinId, poolId, coin, coinOHLCData }: LiveD
         <CoinHeader
           name={coin.name}
           image={coin.image.large}
-          livePrice={price?.usd ?? coin.market_data.current_price.usd}
+          livePrice={(price?.usd ?? coin.market_data.current_price.usd) * usdToCurrencyRate}
           livePriceChangePercentage24h={
             price?.change24h ?? coin.market_data.price_change_percentage_24h_in_currency.usd
           }
           priceChangePercentage30d={coin.market_data.price_change_percentage_30d_in_currency.usd}
           priceChange24h={coin.market_data.price_change_24h_in_currency.usd}
+          currency={currency}
         />
       </div>
 
       <section className="left-sidebar w-full flex flex-col gap-4 lg:col-span-1 border border-dark-400 rounded-lg p-2 bg-dark-500/50">
-        {children}
+        {React.Children.map(children, (child) => {
+          if (React.isValidElement(child)) {
+            // Check if the child is a fragment or a container
+            // We'll recursively inject props into the child if it's the Converter
+            // For now, let's just assume children contains the Converter directly or within a div
+             return React.cloneElement(child as any, { 
+                currency, 
+                onCurrencyChange: setCurrency 
+              });
+          }
+          return child;
+        })}
       </section>
 
       <section className="center-chart w-full flex flex-col lg:col-span-2 xl:col-span-3 border border-dark-400 rounded-lg overflow-hidden bg-dark-500">
@@ -76,6 +92,8 @@ const LiveDataWrapper = ({ children, coinId, poolId, coin, coinOHLCData }: LiveD
             initialPeriod="monthly"
             liveInterval={liveInterval}
             setLiveInterval={setLiveInterval}
+            currency={currency}
+            exchangeRate={usdToCurrencyRate}
           />
         </div>
       </section>
@@ -85,6 +103,8 @@ const LiveDataWrapper = ({ children, coinId, poolId, coin, coinOHLCData }: LiveD
           coinId={coinId} 
           coinSymbol={coin.symbol} 
           livePrice={price?.usd ?? coin.market_data.current_price.usd} 
+          currency={currency}
+          exchangeRate={usdToCurrencyRate}
         />
 
         {tradeColumns && (

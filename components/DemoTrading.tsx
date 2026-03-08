@@ -1,12 +1,15 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { LogIn } from 'lucide-react';
+import { LogIn, CheckCircle } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 
 interface DemoTradingProps {
   coinId: string;
   coinSymbol: string;
   livePrice: number;
+  currency?: string;
+  exchangeRate?: number;
 }
 
 interface Portfolio {
@@ -29,11 +32,20 @@ const savePortfolio = (p: Portfolio) => {
   localStorage.setItem('coinpulse_demo_portfolio', JSON.stringify(p));
 };
 
-const DemoTrading = ({ coinId, coinSymbol, livePrice }: DemoTradingProps) => {
+const DemoTrading = ({ coinId, coinSymbol, livePrice, currency = 'usd', exchangeRate = 1 }: DemoTradingProps) => {
   const [portfolio, setPortfolio] = useState<Portfolio>(getPortfolio);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [tab, setTab] = useState<'buy' | 'sell'>('buy');
   const [amount, setAmount] = useState<string>('');
+  const [confirmation, setConfirmation] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  // Clear confirmation after 3 seconds
+  useEffect(() => {
+    if (confirmation) {
+      const timer = setTimeout(() => setConfirmation(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [confirmation]);
 
   // Auth listener
   useEffect(() => {
@@ -100,6 +112,10 @@ const DemoTrading = ({ coinId, coinSymbol, livePrice }: DemoTradingProps) => {
     setPortfolio(newPortfolio);
     savePortfolio(newPortfolio);
     setAmount('');
+    setConfirmation({ 
+      message: `${tab === 'buy' ? 'Bought' : 'Sold'} ${qty} ${coinSymbol.toUpperCase()}`,
+      type: 'success' 
+    });
   }, [amount, coinId, coinSymbol, livePrice, portfolio, tab]);
 
   const setMaxAmount = () => {
@@ -140,19 +156,19 @@ const DemoTrading = ({ coinId, coinSymbol, livePrice }: DemoTradingProps) => {
             <div className="flex justify-between items-center mb-1">
               <span className="text-xs text-purple-100/50">{coinSymbol.toUpperCase()} Holdings</span>
               <span className="text-sm font-bold text-white">
-                {holding.qty.toLocaleString(undefined, { maximumFractionDigits: 6 })} ≈ ${currentValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {holding.qty.toLocaleString(undefined, { maximumFractionDigits: 6 })} ≈ {formatCurrency(currentValue * exchangeRate, 2, currency)}
               </span>
             </div>
             <div className="flex justify-between items-center mb-1">
               <span className="text-xs text-purple-100/50">Avg Cost</span>
               <span className="text-xs text-purple-100/70">
-                ${holding.avgCost.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {formatCurrency(holding.avgCost * exchangeRate, 2, currency)}
               </span>
             </div>
             <div className="flex justify-between items-center pt-1 border-t border-dark-400/50 mt-1">
               <span className="text-xs text-purple-100/50">{coinSymbol.toUpperCase()} P&L</span>
               <span className={`text-sm font-bold ${pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {pnl >= 0 ? '+' : ''}${pnl.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {pnl >= 0 ? '+' : ''}{formatCurrency(pnl * exchangeRate, 2, currency)}
                 {' '}({pnlPercent >= 0 ? '+' : ''}{pnlPercent.toFixed(2)}%)
               </span>
             </div>
@@ -196,7 +212,7 @@ const DemoTrading = ({ coinId, coinSymbol, livePrice }: DemoTradingProps) => {
         <div className="flex justify-between text-sm bg-dark-400/50 px-3 py-2 rounded-lg">
           <span className="text-purple-100/50">Total</span>
           <span className="font-bold text-white">
-            ${(parseFloat(amount || '0') * (livePrice || 0)).toLocaleString(undefined, { maximumFractionDigits: 2 })} USDT
+            {formatCurrency(parseFloat(amount || '0') * (livePrice || 0) * exchangeRate, 2, currency)}
           </span>
         </div>
 
@@ -210,6 +226,15 @@ const DemoTrading = ({ coinId, coinSymbol, livePrice }: DemoTradingProps) => {
         >
           {tab === 'buy' ? 'Buy' : 'Sell'} {coinSymbol.toUpperCase()}
         </button>
+
+        {confirmation && (
+          <div className={`flex items-center gap-2 p-3 rounded-lg text-sm font-medium animate-in fade-in slide-in-from-top-2 ${
+            confirmation.type === 'success' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
+          }`}>
+            <CheckCircle size={16} />
+            {confirmation.message}
+          </div>
+        )}
       </div>
     </div>
   );
