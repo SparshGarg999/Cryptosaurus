@@ -26,7 +26,8 @@ const Header = () => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [portfolioValue, setPortfolioValue] = useState(INITIAL_CAPITAL);
+  const [portfolioUsdt, setPortfolioUsdt] = useState(INITIAL_CAPITAL);
+  const [holdingsCount, setHoldingsCount] = useState(0);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -50,8 +51,9 @@ const Header = () => {
         const saved = localStorage.getItem('coinpulse_demo_portfolio');
         if (saved) {
           const p: Portfolio = JSON.parse(saved);
-          // We can only show USDT value here since we don't have live prices for all holdings
-          setPortfolioValue(p.usdt);
+          setPortfolioUsdt(p.usdt);
+          const activeHoldings = Object.values(p.holdings || {}).filter((h: any) => h.qty > 0).length;
+          setHoldingsCount(activeHoldings);
         }
       } catch {}
     };
@@ -89,7 +91,7 @@ const Header = () => {
     window.dispatchEvent(new Event('local-storage'));
   };
 
-  const pnl = portfolioValue - INITIAL_CAPITAL;
+
 
   return (
     <>
@@ -145,7 +147,7 @@ const Header = () => {
                         <span className="text-xs text-purple-100/50">USDT Balance</span>
                       </div>
                       <p className="text-sm font-bold text-white">
-                        ${portfolioValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        ${portfolioUsdt.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                       </p>
                     </div>
                     <button
@@ -169,20 +171,20 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Global PnL Bar — visible when logged in */}
+      {/* Global Portfolio Bar — visible when logged in */}
       {isLoggedIn && (
         <div className="bg-dark-500/80 border-b border-dark-400 px-4 py-1.5">
           <div className="main-container flex items-center justify-between text-xs">
             <div className="flex items-center gap-4">
-              <span className="text-purple-100/50">Demo Portfolio</span>
+              <span className="text-purple-100/50">Available USDT</span>
               <span className="text-white font-bold">
-                ${portfolioValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} USDT
+                ${portfolioUsdt.toLocaleString(undefined, { maximumFractionDigits: 2 })}
               </span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-purple-100/50">Unrealized P&L</span>
-              <span className={`font-bold ${pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {pnl >= 0 ? '+' : ''}${pnl.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+              <span className="text-purple-100/50">Active Holdings</span>
+              <span className="text-white font-bold">
+                {holdingsCount} coin{holdingsCount !== 1 ? 's' : ''}
               </span>
             </div>
           </div>

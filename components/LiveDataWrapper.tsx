@@ -73,7 +73,7 @@ const LiveDataWrapper = ({ children, coinId, poolId, coin, coinOHLCData }: LiveD
             liveOhlcv={ohlcv}
             livePrice={price?.usd}
             mode="live"
-            initialPeriod="daily"
+            initialPeriod="monthly"
             liveInterval={liveInterval}
             setLiveInterval={setLiveInterval}
           />

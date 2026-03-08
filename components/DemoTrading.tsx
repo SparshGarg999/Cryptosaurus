@@ -54,15 +54,11 @@ const DemoTrading = ({ coinId, coinSymbol, livePrice }: DemoTradingProps) => {
 
   const holding = portfolio.holdings[coinId] || { qty: 0, avgCost: 0 };
 
-  // Live PnL calculation
+  // Per-coin PnL only
   const currentValue = holding.qty * livePrice;
   const investedValue = holding.qty * holding.avgCost;
   const pnl = currentValue - investedValue;
   const pnlPercent = investedValue > 0 ? (pnl / investedValue) * 100 : 0;
-
-  // Total portfolio value
-  const totalPortfolioValue = portfolio.usdt + currentValue;
-  const totalPnl = totalPortfolioValue - INITIAL_CAPITAL;
 
   const handleTrade = useCallback(() => {
     if (!livePrice || livePrice <= 0) return;
@@ -82,8 +78,8 @@ const DemoTrading = ({ coinId, coinSymbol, livePrice }: DemoTradingProps) => {
         return;
       }
       const newQty = currentHolding.qty + qty;
-      const newAvgCost = newQty > 0 
-        ? ((currentHolding.qty * currentHolding.avgCost) + cost) / newQty 
+      const newAvgCost = newQty > 0
+        ? ((currentHolding.qty * currentHolding.avgCost) + cost) / newQty
         : 0;
       newPortfolio.usdt = currentUsdt - cost;
       newPortfolio.holdings[coinId] = { qty: newQty, avgCost: newAvgCost };
@@ -95,9 +91,9 @@ const DemoTrading = ({ coinId, coinSymbol, livePrice }: DemoTradingProps) => {
       const revenue = qty * livePrice;
       const newQty = currentHolding.qty - qty;
       newPortfolio.usdt = currentUsdt + revenue;
-      newPortfolio.holdings[coinId] = { 
-        qty: newQty, 
-        avgCost: newQty > 0 ? currentHolding.avgCost : 0 
+      newPortfolio.holdings[coinId] = {
+        qty: newQty,
+        avgCost: newQty > 0 ? currentHolding.avgCost : 0
       };
     }
 
@@ -125,46 +121,42 @@ const DemoTrading = ({ coinId, coinSymbol, livePrice }: DemoTradingProps) => {
         <p className="text-sm text-purple-100/50">
           Please login to access demo trading with $100,000 virtual USDT.
         </p>
-        <button
-          onClick={() => {
-            localStorage.setItem('coinpulse_auth', 'true');
-            setIsLoggedIn(true);
-            window.dispatchEvent(new Event('local-storage'));
-          }}
-          className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-6 rounded-lg transition-colors"
-        >
-          Login to Trade
-        </button>
       </div>
     );
   }
 
   return (
     <div className="bg-dark-500 rounded-lg flex flex-col">
-      {/* PnL Summary */}
+      {/* Balances & Per-coin PnL */}
       <div className="p-3 border-b border-dark-400">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-xs text-purple-100/50">Portfolio Value</span>
+          <span className="text-xs text-purple-100/50">Available USDT</span>
           <span className="text-sm font-bold text-white">
-            ${totalPortfolioValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-          </span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-xs text-purple-100/50">Total P&L</span>
-          <span className={`text-sm font-bold ${totalPnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-            {totalPnl >= 0 ? '+' : ''}${totalPnl.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+            ${portfolio.usdt.toLocaleString(undefined, { maximumFractionDigits: 2 })}
           </span>
         </div>
         {holding.qty > 0 && (
-          <div className="mt-2 pt-2 border-t border-dark-400/50">
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-purple-100/50">{coinSymbol.toUpperCase()} P&L</span>
-              <span className={`text-xs font-bold ${pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {pnl >= 0 ? '+' : ''}${pnl.toLocaleString(undefined, { maximumFractionDigits: 2 })} 
-                ({pnlPercent >= 0 ? '+' : ''}{pnlPercent.toFixed(2)}%)
+          <>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs text-purple-100/50">{coinSymbol.toUpperCase()} Holdings</span>
+              <span className="text-sm font-bold text-white">
+                {holding.qty.toLocaleString(undefined, { maximumFractionDigits: 6 })} ≈ ${currentValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
               </span>
             </div>
-          </div>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs text-purple-100/50">Avg Cost</span>
+              <span className="text-xs text-purple-100/70">
+                ${holding.avgCost.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+              </span>
+            </div>
+            <div className="flex justify-between items-center pt-1 border-t border-dark-400/50 mt-1">
+              <span className="text-xs text-purple-100/50">{coinSymbol.toUpperCase()} P&L</span>
+              <span className={`text-sm font-bold ${pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                {pnl >= 0 ? '+' : ''}${pnl.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {' '}({pnlPercent >= 0 ? '+' : ''}{pnlPercent.toFixed(2)}%)
+              </span>
+            </div>
+          </>
         )}
       </div>
 
@@ -185,11 +177,6 @@ const DemoTrading = ({ coinId, coinSymbol, livePrice }: DemoTradingProps) => {
       </div>
 
       <div className="p-4 flex flex-col gap-3">
-        <div className="flex justify-between text-xs text-purple-100/70">
-          <span>USDT: ${(portfolio.usdt).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
-          <span>{coinSymbol.toUpperCase()}: {holding.qty.toLocaleString(undefined, { maximumFractionDigits: 6 })}</span>
-        </div>
-
         <div className="relative">
           <input
             type="number"
