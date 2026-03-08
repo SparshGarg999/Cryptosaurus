@@ -101,8 +101,21 @@ const Header = () => {
     <>
       <header>
         <div className="main-container inner">
-          <Link href="/">
-            <Image src="/logo.png" alt="Cryptosaurus logo" width={132} height={40} />
+          <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <div className="relative size-10 flex items-center justify-center bg-gradient-to-br from-purple-500 to-green-500 rounded-xl overflow-hidden shadow-lg shadow-purple-500/20">
+              <svg viewBox="0 0 24 24" className="size-7 fill-white drop-shadow-md" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 10V6L19 4L16 6L14 3L11 6L8 3L5 6L2 4V10L5 12V21H19V12L22 10ZM17 19H7V11.5L12 14L17 11.5V19Z" />
+              </svg>
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xl font-black tracking-tighter text-white leading-none">
+                CRYPTO<span className="text-green-500">SAURUS</span>
+              </span>
+              <span className="text-[10px] font-bold text-purple-100/50 uppercase tracking-[0.2em] mt-1">
+                Hunt the Best Crypto Trades
+              </span>
+            </div>
           </Link>
 
           <nav>
