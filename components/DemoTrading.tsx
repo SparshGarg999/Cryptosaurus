@@ -23,7 +23,13 @@ const getPortfolio = (): Portfolio => {
   if (typeof window === 'undefined') return { usdt: INITIAL_CAPITAL, holdings: {} };
   try {
     const saved = localStorage.getItem('coinpulse_demo_portfolio');
-    if (saved) return JSON.parse(saved);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return {
+        usdt: typeof parsed.usdt === 'number' ? parsed.usdt : INITIAL_CAPITAL,
+        holdings: parsed.holdings || {},
+      };
+    }
   } catch (e) {}
   return { usdt: INITIAL_CAPITAL, holdings: {} };
 };
@@ -67,7 +73,7 @@ const DemoTrading = ({ coinId, coinSymbol, livePrice, currentPriceList }: DemoTr
     setPortfolio(getPortfolio());
   }, []);
 
-  const holding = portfolio.holdings[coinId] || { qty: 0, avgCost: 0 };
+  const holding = portfolio?.holdings?.[coinId] || { qty: 0, avgCost: 0 };
 
   // Per-coin PnL only
   const currentValue = holding.qty * livePrice;

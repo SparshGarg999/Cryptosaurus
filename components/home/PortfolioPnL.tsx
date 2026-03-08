@@ -30,7 +30,7 @@ const PortfolioPnL = () => {
         const p: Portfolio = JSON.parse(saved);
         setPortfolio(p);
 
-        const coinIds = Object.keys(p.holdings);
+        const coinIds = Object.keys(p.holdings || {});
         if (coinIds.length > 0) {
           const prices = await fetcher<Record<string, { [key: string]: number }>>('/simple/price', {
             ids: coinIds.join(','),
