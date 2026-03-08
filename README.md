@@ -27,7 +27,7 @@ Cryptosaurus is a high-performance cryptocurrency analytics and trading dashboar
 - **Iconography:** Installed `lucide-react` for a consistent set of vector icons.
 - **Git Workflow:** 
   - Setup SSH access to GitHub account.
-  - Initialized repository and migrated to user-owned [cryptosaurus](https://github.com/SparshGarg999/noU) repository.
+  - Initialized repository and migrated to user-owned [Cryptosaurus](https://github.com/SparshGarg999/Cryptosaurus) repository.
   - Established `upstream` tracking for the base template.
 - **UI System:** 
   - Initialized Shadcn-ui for modular component architecture.
