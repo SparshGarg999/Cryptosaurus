@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { User, ChevronDown, Wallet } from 'lucide-react';
 import LoginModal from '@/components/LoginModal';
+import SearchModal from '@/components/SearchModal';
 import { formatCurrency } from '@/lib/utils';
 import { useCurrency } from '@/context/CurrencyContext';
 
@@ -115,7 +116,7 @@ const Header = () => {
               Home
             </Link>
 
-            <p>Search Modal</p>
+            <SearchModal />
 
             <Link
               href="/coins"

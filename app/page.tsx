@@ -7,11 +7,16 @@ import {
   TrendingCoinsFallback,
 } from '@/components/home/fallback';
 import Categories from '@/components/home/Categories';
+import PortfolioPnL from '@/components/home/PortfolioPnL';
 
 const Page = async () => {
   return (
     <main className="main-container">
       <section className="home-grid">
+        <div className="lg:col-span-full">
+          <PortfolioPnL />
+        </div>
+
         <Suspense fallback={<CoinOverviewFallback />}>
           <CoinOverview />
         </Suspense>
