@@ -9,12 +9,14 @@ interface CandlestickChartProps {
   data?: OHLCData[];
   liveOhlcv?: OHLCData | null;
   coinId: string;
+  coinSymbol?: string;
   height?: number;
   children?: React.ReactNode;
   mode?: 'historical' | 'live';
   initialPeriod?: Period;
-  liveInterval: '1s' | '1m';
-  setLiveInterval: (interval: '1s' | '1m') => void;
+  livePrice?: number;
+  liveInterval?: 'second' | 'minute';
+  setLiveInterval?: (interval: 'second' | 'minute') => void;
 }
 
 interface ConverterProps {
@@ -36,7 +38,7 @@ interface Ticker {
   trade_url: string;
 }
 
-type Period = 'daily' | 'weekly' | 'monthly' | '3months' | '6months' | 'yearly' | 'max';
+type Period = '1m' | '15m' | 'daily' | 'weekly' | 'monthly' | '3months' | '6months' | 'yearly' | 'max';
 
 interface CoinMarketData {
   id: string;
@@ -240,6 +242,7 @@ interface LiveCoinHeaderProps {
 }
 
 interface Category {
+  id: string;
   name: string;
   top_3_coins: string[];
   market_cap_change_24h: number;
@@ -249,8 +252,9 @@ interface Category {
 
 interface UseCoinGeckoWebSocketProps {
   coinId: string;
+  coinSymbol?: string;
   poolId: string;
-  liveInterval?: '1s' | '1m';
+  liveInterval?: 'second' | 'minute';
 }
 
 interface UseCoinGeckoWebSocketReturn {

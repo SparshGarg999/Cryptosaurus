@@ -13,10 +13,9 @@ const Page = async ({ params }: NextPageProps) => {
     fetcher<CoinDetailsData>(`/coins/${id}`, {
       dex_pair_format: 'contract_address',
     }),
-    fetcher<OHLCData>(`/coins/${id}/ohlc`, {
+    fetcher<OHLCData[]>(`/coins/${id}/ohlc`, {
       vs_currency: 'usd',
       days: 1,
-      interval: 'hourly',
       precision: 'full',
     }),
   ]);
@@ -64,42 +63,39 @@ const Page = async ({ params }: NextPageProps) => {
 
   return (
     <main id="coin-details-page">
-      <section className="primary">
-        <LiveDataWrapper coinId={id} poolId={pool.id} coin={coinData} coinOHLCData={coinOHLCData}>
-          <h4>Exchange Listings</h4>
-        </LiveDataWrapper>
-      </section>
+      <LiveDataWrapper coinId={id} poolId={pool.id} coin={coinData} coinOHLCData={coinOHLCData}>
+        {/* Left Sidebar Content gets passed as children */}
+        <div className="flex flex-col gap-6">
+          <Converter
+            symbol={coinData.symbol}
+            icon={coinData.image.small}
+            priceList={coinData.market_data.current_price}
+          />
 
-      <section className="secondary">
-        <Converter
-          symbol={coinData.symbol}
-          icon={coinData.image.small}
-          priceList={coinData.market_data.current_price}
-        />
+          <div className="details bg-dark-500 rounded-lg p-4">
+            <h4 className="text-xl font-bold mb-4">Coin Details</h4>
 
-        <div className="details">
-          <h4>Coin Details</h4>
+            <ul className="details-grid">
+              {coinDetails.map(({ label, value, link, linkText }, index) => (
+                <li key={index}>
+                  <p className={label}>{label}</p>
 
-          <ul className="details-grid">
-            {coinDetails.map(({ label, value, link, linkText }, index) => (
-              <li key={index}>
-                <p className={label}>{label}</p>
-
-                {link ? (
-                  <div className="link">
-                    <Link href={link} target="_blank">
-                      {linkText || label}
-                    </Link>
-                    <ArrowUpRight size={16} />
-                  </div>
-                ) : (
-                  <p className="text-base font-medium">{value}</p>
-                )}
-              </li>
-            ))}
-          </ul>
+                  {link ? (
+                    <div className="link">
+                      <Link href={link} target="_blank">
+                        {linkText || label}
+                      </Link>
+                      <ArrowUpRight size={16} />
+                    </div>
+                  ) : (
+                    <p className="font-bold text-white">{value}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </section>
+      </LiveDataWrapper>
     </main>
   );
 };

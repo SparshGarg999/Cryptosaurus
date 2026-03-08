@@ -67,6 +67,7 @@ export const getChartConfig = (
     borderColor: CHART_COLORS.border,
     timeVisible,
     secondsVisible: false,
+
   },
   handleScroll: true,
   handleScale: true,
@@ -93,18 +94,22 @@ export const getChartConfig = (
 
 export const PERIOD_CONFIG: Record<
   Period,
-  { days: number | string; interval?: 'hourly' | 'daily' }
+  { days: number | string; interval?: 'hourly' | 'daily'; binanceInterval?: string; binanceLimit?: number }
 > = {
-  daily: { days: 1, interval: 'hourly' },
-  weekly: { days: 7, interval: 'hourly' },
-  monthly: { days: 30, interval: 'hourly' },
-  '3months': { days: 90, interval: 'daily' },
-  '6months': { days: 180, interval: 'daily' },
-  yearly: { days: 365 },
-  max: { days: 'max' },
+  '1m': { days: 0, binanceInterval: '1m', binanceLimit: 1000 },
+  '15m': { days: 0, binanceInterval: '15m', binanceLimit: 1000 },
+  daily: { days: 1, binanceInterval: '15m', binanceLimit: 96 },
+  weekly: { days: 7, interval: 'daily', binanceInterval: '1h', binanceLimit: 168 },
+  monthly: { days: 30, interval: 'daily', binanceInterval: '4h', binanceLimit: 180 },
+  '3months': { days: 90, interval: 'daily', binanceInterval: '12h', binanceLimit: 180 },
+  '6months': { days: 180, interval: 'daily', binanceInterval: '1d', binanceLimit: 180 },
+  yearly: { days: 365, binanceInterval: '1d', binanceLimit: 365 },
+  max: { days: 'max', binanceInterval: '1w', binanceLimit: 1000 },
 };
 
 export const PERIOD_BUTTONS: { value: Period; label: string }[] = [
+  { value: '1m', label: '1m' },
+  { value: '15m', label: '15m' },
   { value: 'daily', label: '1D' },
   { value: 'weekly', label: '1W' },
   { value: 'monthly', label: '1M' },
@@ -114,7 +119,7 @@ export const PERIOD_BUTTONS: { value: Period; label: string }[] = [
   { value: 'max', label: 'Max' },
 ];
 
-export const LIVE_INTERVAL_BUTTONS: { value: '1s' | '1m'; label: string }[] = [
-  { value: '1s', label: '1s' },
-  { value: '1m', label: '1m' },
+export const LIVE_INTERVAL_BUTTONS: { value: 'second' | 'minute'; label: string }[] = [
+  { value: 'second', label: '1s' },
+  { value: 'minute', label: '1m' },
 ];

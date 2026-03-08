@@ -53,7 +53,6 @@
   --color-green-400: var(--green-400);
   --color-green-300: var(--green-300);
   --color-red-500: var(--red-500);
-  --color-yellow-500: var(--yellow-500);
 }
 
 :root {
@@ -133,12 +132,12 @@
   --purple-600: #1b254b;
   --purple-100: #a3aed0;
 
-  --green-500: #76da44;
-  --green-400: #2ebe7b;
-  --green-300: #99e39e;
+  --green-500: #0ecb81;
+  --green-400: #0ecb81;
+  --green-300: #0ecb81;
 
-  --red-500: #ff685f;
-  --yellow-500: #dabe44;
+  --red-500: #f6465d;
+  --yellow-500: #fcd535;
 }
 
 @layer base {
@@ -152,11 +151,11 @@
 
 @layer components {
   .container {
-    @apply px-4 sm:px-6 mx-auto max-w-360;
+    @apply px-4 sm:px-6 mx-auto w-full max-w-[1920px];
   }
 
   .main-container {
-    @apply py-6 md:py-12 mx-auto px-4 sm:px-6 max-w-360 w-full space-y-6 md:space-y-6;
+    @apply py-6 md:py-12 mx-auto px-4 sm:px-6 w-full max-w-[1920px] space-y-6 md:space-y-6;
   }
 
   .badge {
@@ -500,10 +499,10 @@
   }
 
   #coin-details-page {
-    @apply py-12 px-4 sm:px-6 mx-auto max-w-360 size-full grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 items-center gap-6 xl:gap-10 justify-center;
+    @apply py-6 px-4 sm:px-6 mx-auto w-full max-w-[1920px] grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-5 items-start gap-4 justify-center;
 
     .primary {
-      @apply size-full xl:col-span-2;
+      @apply size-full lg:col-span-2 xl:col-span-3;
     }
 
     .secondary {
@@ -557,14 +556,19 @@
         @apply rounded-lg grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-3 sm:gap-5;
 
         li {
-          @apply text-base bg-dark-500 px-5 py-6 rounded-lg flex flex-col gap-3;
-
+          @apply text-sm bg-dark-500 px-4 py-4 rounded-lg flex flex-col gap-1;
+          
           .label {
+            @apply flex flex-col justify-center;
             @apply text-purple-100;
           }
 
           .link {
-            @apply flex items-center text-green-500 gap-1;
+            @apply flex items-center gap-1 justify-start;
+          }
+          
+          p {
+            @apply truncate break-words mb-0;
           }
         }
       }
@@ -572,7 +576,7 @@
   }
 
   #coins-page {
-    @apply py-12 px-4 sm:px-6 mx-auto max-w-360 size-full items-center gap-10 justify-center;
+    @apply py-12 px-4 sm:px-6 mx-auto w-full max-w-[1920px] items-center gap-10 justify-center;
 
     .content {
       @apply flex flex-col w-full space-y-5;
@@ -772,25 +776,25 @@
   }
 
   #coin-header {
-    @apply space-y-5 w-full;
+    @apply flex flex-wrap gap-4 items-center w-full px-4 py-3 bg-dark-500 rounded-lg mb-4;
 
     h3 {
-      @apply text-3xl font-medium;
+      @apply text-xl font-bold mt-1 mr-4 hidden;
     }
 
     .info {
-      @apply flex gap-3 items-center;
+      @apply flex gap-3 items-center border-r border-dark-400 pr-5;
 
       img {
-        @apply size-11.25 sm:size-12.5 xl:size-19.25;
+        @apply size-8 sm:size-10 xl:size-10 rounded-full;
       }
     }
 
     .price-row {
-      @apply flex gap-4;
+      @apply flex flex-col;
 
       h1 {
-        @apply text-3xl sm:text-5xl xl:text-6xl font-semibold;
+        @apply text-lg sm:text-xl xl:text-2xl font-bold;
       }
     }
 

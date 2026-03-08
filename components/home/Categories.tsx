@@ -1,6 +1,7 @@
 import { fetcher } from '@/lib/coingecko.actions';
 import DataTable from '@/components/DataTable';
 import Image from 'next/image';
+import Link from 'next/link';
 import { cn, formatCurrency, formatPercentage } from '@/lib/utils';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import { CategoriesFallback } from './fallback';
@@ -10,9 +11,17 @@ const Categories = async () => {
     const categories = await fetcher<Category[]>('/coins/categories');
 
     const columns: DataTableColumn<Category>[] = [
-      { header: 'Category', cellClassName: 'category-cell', cell: (category) => category.name },
+      { 
+        header: 'Category', 
+        cellClassName: 'category-cell', 
+        cell: (category) => (
+          <Link href={`/coins?category=${category.id}`} className="hover:text-purple-400 transition-colors">
+            {category.name}
+          </Link>
+        )
+      },
       {
-        header: 'Top Gainers',
+        header: 'Top Coins',
         cellClassName: 'top-gainers-cell',
         cell: (category) =>
           category.top_3_coins.map((coin) => (

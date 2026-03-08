@@ -7,19 +7,25 @@ import DataTable from '@/components/DataTable';
 import CoinsPagination from '@/components/CoinsPagination';
 
 const Coins = async ({ searchParams }: NextPageProps) => {
-  const { page } = await searchParams;
+  const { page, category } = await searchParams;
 
   const currentPage = Number(page) || 1;
   const perPage = 10;
 
-  const coinsData = await fetcher<CoinMarketData[]>('/coins/markets', {
+  const queryParams: Record<string, string | number> = {
     vs_currency: 'usd',
     order: 'market_cap_desc',
     per_page: perPage,
     page: currentPage,
     sparkline: 'false',
     price_change_percentage: '24h',
-  });
+  };
+
+  if (category) {
+    queryParams.category = category as string;
+  }
+
+  const coinsData = await fetcher<CoinMarketData[]>('/coins/markets', queryParams);
 
   const columns: DataTableColumn<CoinMarketData>[] = [
     {
@@ -82,7 +88,17 @@ const Coins = async ({ searchParams }: NextPageProps) => {
   return (
     <main id="coins-page">
       <div className="content">
-        <h4>All Coins</h4>
+        <h4>
+          {category ? (
+            <>
+              <Link href="/coins" className="text-purple-100/50 hover:text-white transition-colors">All Coins</Link>
+              {' / '}
+              <span className="capitalize">{(category as string).replace(/-/g, ' ')}</span>
+            </>
+          ) : (
+            'All Coins'
+          )}
+        </h4>
 
         <DataTable
           tableClassName="coins-table"

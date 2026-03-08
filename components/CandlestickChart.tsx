@@ -8,17 +8,20 @@ import {
   PERIOD_BUTTONS,
   PERIOD_CONFIG,
 } from '@/constants';
-import { CandlestickSeries, createChart, IChartApi, ISeriesApi } from 'lightweight-charts';
+import { CandlestickSeries, createChart, IChartApi, ISeriesApi, LogicalRange } from 'lightweight-charts';
 import { fetcher } from '@/lib/coingecko.actions';
 import { convertOHLCData } from '@/lib/utils';
+import { Maximize, Minimize } from 'lucide-react';
 
 const CandlestickChart = ({
   children,
   data,
   coinId,
+  coinSymbol,
   height = 360,
   initialPeriod = 'daily',
   liveOhlcv = null,
+  livePrice,
   mode = 'historical',
   liveInterval,
   setLiveInterval,
@@ -30,18 +33,48 @@ const CandlestickChart = ({
 
   const [period, setPeriod] = useState(initialPeriod);
   const [ohlcData, setOhlcData] = useState<OHLCData[]>(data ?? []);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const fetchOHLCData = async (selectedPeriod: Period) => {
     try {
-      const { days, interval } = PERIOD_CONFIG[selectedPeriod];
+      const { days, interval, binanceInterval, binanceLimit } = PERIOD_CONFIG[selectedPeriod];
 
-      const newData = await fetcher<OHLCData[]>(`/coins/${coinId}/ohlc`, {
+      if (coinSymbol && binanceInterval) {
+        try {
+          const res = await fetch(
+            `https://api.binance.com/api/v3/klines?symbol=${coinSymbol.toUpperCase()}USDT&interval=${binanceInterval}&limit=${binanceLimit}`
+          );
+          const klines = await res.json();
+          if (Array.isArray(klines)) {
+            const newData = klines.map((k: any) => [
+              k[0],
+              parseFloat(k[1]),
+              parseFloat(k[2]),
+              parseFloat(k[3]),
+              parseFloat(k[4]),
+            ] as OHLCData);
+            
+            startTransition(() => {
+              setOhlcData(newData);
+            });
+            return;
+          }
+        } catch (e) {
+           console.warn(`Binance fetch failed for ${coinSymbol}, falling back to CoinGecko`);
+        }
+      }
+
+      const params: Record<string, string | number> = {
         vs_currency: 'usd',
         days,
-        interval,
-        precision: 'full',
-      });
+      };
+
+      if (interval) {
+        params.interval = interval;
+      }
+
+      const newData = await fetcher<OHLCData[]>(`/coins/${coinId}/ohlc`, params);
 
       startTransition(() => {
         setOhlcData(newData ?? []);
@@ -51,11 +84,31 @@ const CandlestickChart = ({
     }
   };
 
+  useEffect(() => {
+    fetchOHLCData(period);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handlePeriodChange = (newPeriod: Period) => {
     if (newPeriod === period) return;
 
     setPeriod(newPeriod);
     fetchOHLCData(newPeriod);
+  };
+
+  const toggleFullscreen = () => {
+    const container = document.getElementById('candlestick-chart');
+    if (!container) return;
+
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
   };
 
   useEffect(() => {
@@ -75,7 +128,16 @@ const CandlestickChart = ({
     );
 
     series.setData(convertOHLCData(convertedToSeconds));
-    chart.timeScale().fitContent();
+    
+    // Zoom in slightly by default for dense charts 
+    if (convertedToSeconds.length > 80) {
+      chart.timeScale().setVisibleLogicalRange({
+        from: convertedToSeconds.length - 80,
+        to: convertedToSeconds.length,
+      });
+    } else {
+      chart.timeScale().fitContent();
+    }
 
     chartRef.current = chart;
     candleSeriesRef.current = series;
@@ -101,20 +163,23 @@ const CandlestickChart = ({
       (item) => [Math.floor(item[0] / 1000), item[1], item[2], item[3], item[4]] as OHLCData,
     );
 
-    let merged: OHLCData[];
+    let merged: OHLCData[] = [...convertedToSeconds];
 
-    if (liveOhlcv) {
+    if (livePrice && merged.length > 0) {
+      const last = merged[merged.length - 1];
+      const newClose = livePrice;
+      const newHigh = Math.max(last[2], newClose);
+      const newLow = Math.min(last[3], newClose);
+      merged[merged.length - 1] = [last[0], last[1], newHigh, newLow, newClose];
+    } else if (liveOhlcv) {
       const liveTimestamp = liveOhlcv[0];
-
       const lastHistoricalCandle = convertedToSeconds[convertedToSeconds.length - 1];
 
       if (lastHistoricalCandle && lastHistoricalCandle[0] === liveTimestamp) {
         merged = [...convertedToSeconds.slice(0, -1), liveOhlcv];
-      } else {
+      } else if (lastHistoricalCandle && liveTimestamp > lastHistoricalCandle[0]) {
         merged = [...convertedToSeconds, liveOhlcv];
       }
-    } else {
-      merged = convertedToSeconds;
     }
 
     merged.sort((a, b) => a[0] - b[0]);
@@ -125,10 +190,17 @@ const CandlestickChart = ({
     const dataChanged = prevOhlcDataLength.current !== ohlcData.length;
 
     if (dataChanged || mode === 'historical') {
-      chartRef.current?.timeScale().fitContent();
+      if (ohlcData.length > 80) {
+        chartRef.current?.timeScale().setVisibleLogicalRange({
+          from: ohlcData.length - 80,
+          to: ohlcData.length,
+        });
+      } else {
+        chartRef.current?.timeScale().fitContent();
+      }
       prevOhlcDataLength.current = ohlcData.length;
     }
-  }, [ohlcData, period, liveOhlcv, mode]);
+  }, [ohlcData, period, liveOhlcv, livePrice, mode]);
 
   return (
     <div id="candlestick-chart">
@@ -164,9 +236,17 @@ const CandlestickChart = ({
             ))}
           </div>
         )}
+
+        <button
+          onClick={toggleFullscreen}
+          className="config-button flex items-center justify-center p-2 rounded-md hover:bg-dark-400 text-purple-100 transition-colors ml-2"
+          title="Toggle Fullscreen"
+        >
+          {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+        </button>
       </div>
 
-      <div ref={chartContainerRef} className="chart" style={{ height }} />
+      <div ref={chartContainerRef} className="chart" style={{ height: isFullscreen ? '100%' : height }} />
     </div>
   );
 };

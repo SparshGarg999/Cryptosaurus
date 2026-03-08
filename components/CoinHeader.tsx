@@ -41,18 +41,13 @@ const CoinHeader = ({
 
   return (
     <div id="coin-header">
-      <h3>{name}</h3>
-
       <div className="info">
-        <Image src={image} alt={name} width={77} height={77} />
+        <Image src={image} alt={name} width={40} height={40} />
 
         <div className="price-row">
-          <h1>{formatCurrency(livePrice)}</h1>
-          <Badge className={cn('badge', isTrendingUp ? 'badge-up' : 'badge-down')}>
-            {formatPercentage(livePriceChangePercentage24h)}
-            {isTrendingUp ? <TrendingUp /> : <TrendingDown />}
-            (24h)
-          </Badge>
+          <p className="text-sm text-purple-100 font-bold mb-0 hidden sm:block">{name}</p>
+          <h1 className={cn(isTrendingUp ? 'text-green-500' : 'text-red-500')}>{formatCurrency(livePrice)}</h1>
+          <p className="text-xs text-purple-100 font-bold mt-1 max-sm:hidden">{formatCurrency(livePrice)}</p>
         </div>
       </div>
 
